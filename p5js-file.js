@@ -1,4 +1,4 @@
-let canvas, circles;
+let canvas, circles, timeline;
 let controls = {
   view: {x: 0, y: 0, zoom: 1},
   viewPos: { prevX: null,  prevY: null,  isDragging: false },
@@ -16,7 +16,10 @@ function setup() {
   controls.view.y = height / 2;
   controls.view.zoom = width / (1000 + 50);
   canvas.mouseWheel(e => Controls.zoom(controls).worldZoom(e));
+  // - - - - - - - - - - - - - - - - - - - - - -
   circles = Circle.create(100);
+  
+  timeline = new Timeline(historyData);
 }
 
 function draw() {
@@ -26,9 +29,7 @@ function draw() {
   // - - - - - - - - - - - - - - - - - - - - - -
   circles.forEach(circle => circle.show());
   
-  stroke(225);
-  strokeWeight(7);
-  line(-500, 0, 500, 0);
+  timeline.draw(controls.view.zoom);
 }
 
 window.mousePressed = e => Controls.move(controls).mousePressed(e);
@@ -122,7 +123,12 @@ class Timeline {
   constructor(data) {
     this.data = data;
   }
-  print(x, y, zoom) {
-    
+  draw(zoom) {
+    // figure out line thickness
+    const thickness = 7 / zoom;
+    // draw main line
+    stroke(225);
+    strokeWeight(thickness);
+    line(-500, 0, 500, 0);
   }
 }
