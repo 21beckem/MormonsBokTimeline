@@ -6,7 +6,11 @@ let controls = {
 const historyData = [
   {
     "title" : "Lehi Leaves Jerusalem",
-    "pos" : 0
+    "pos" : [0,100]
+  },
+  {
+    "title" : "Arrival In America",
+    "pos" : 200
   }
 ]
 
@@ -19,7 +23,7 @@ function setup() {
   // - - - - - - - - - - - - - - - - - - - - - -
   circles = Circle.create(100);
   
-  timeline = new Timeline(historyData);
+  timeline = new Timeline(historyData, color(255), color(150));
 }
 
 function draw() {
@@ -120,15 +124,52 @@ class Circle {
   }
 }
 class Timeline {
-  constructor(data) {
+  constructor(data, lineColor, markerColor) {
     this.data = data;
+    this.lineColor = lineColor;
+    this.markerColor = markerColor;
   }
   draw(zoom) {
+    this.currentZoom = zoom;
     // figure out line thickness
-    const thickness = 7 / zoom;
-    // draw main line
-    stroke(225);
+    const thickness = 3 / zoom;
     strokeWeight(thickness);
-    line(-500, 0, 500, 0);
+    translate(-500, 0);
+    
+    // draw each marker
+    for (let i=0; i<this.data.length; i++) {
+      this.makeEventTree(this.data[i])
+    }
+    
+    // draw main line
+    stroke(this.lineColor);
+    strokeWeight(thickness);
+    line(0, 0, 1000, 0);
   }
+  makeEventTree(thisBigEvent) {
+    if (isInt(thisBigEvent.pos)) {
+      // these are individual events
+      this.makeEvent(thisBigEvent);
+    } else {
+      // these are ranges
+      this.makeRange(thisBigEvent);
+    }
+  }
+  makeEvent(e) {
+    let lineH = 20;
+    let cSize = 50;
+    stroke(this.markerColor);
+    line(e.pos, 0, e.pos, -lineH);
+    noFill();
+    console.log(this.currentZoom);
+    ellipse(e.pos, -(lineH + (cSize / 2)), cSize, cSize);
+  }
+  makeRange(e) {
+    
+  }
+}
+function isInt(value) {
+  return !isNaN(value) && 
+         parseInt(Number(value)) == value && 
+         !isNaN(parseInt(value, 10));
 }
